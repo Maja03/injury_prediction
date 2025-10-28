@@ -237,7 +237,5 @@ This project is developed as part of academic research. Please cite appropriatel
 
 ---
 
-**Thesis**: AI-Based Athlete Injury Prediction System Using Open Football Data  
-**Author**: [Your Name]  
-**Institution**: [Your University]  
-**Year**: 2025
+**Thesis**: AI-Based Athlete Injury Prediction System Using Open Football Data
+
