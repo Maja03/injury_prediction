@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+
+{% block title %}{{ player_id }} - Player Analysis{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active">{{ player_id }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="row">
+    <!-- Player Header -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-user"></i> {{ player_id }}</h2>
+                        <p class="text-muted mb-0">Detailed Injury Risk Analysis</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span id="main-risk-badge" class="badge fs-6"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <!-- Prediction Summary -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> Injury Prediction Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h3 id="predicted-days" class="text-primary">-</h3>
+                        <p class="text-muted">Predicted Days</p>
+                    </div>
+                    <div class="col-6">
+                        <h3 id="actual-days" class="text-info">-</h3>
+                        <p class="text-muted">Actual Days</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <p><strong>Prediction Interval:</strong> <span id="pi-low">-</span> – <span id="pi-high">-</span></p>
+                        <p><strong>Uncertainty:</strong> <span id="uncertainty-flag">-</span> <small class="text-muted" id="uncertainty-reason"></small></p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Age:</strong> <span id="player-age">-</span></p>
+                        <p><strong>Position:</strong> <span id="player-position">-</span></p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Risk Level:</strong> <span id="risk-level">-</span></p>
+                        <p><strong>Confidence:</strong> <span id="confidence">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Risk Analysis -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-exclamation-triangle"></i> Risk Assessment</h5>
+            </div>
+            <div class="card-body">
+                <div id="risk-alert" class="alert">
+                    <h6 id="risk-interpretation">-</h6>
+                    <p id="risk-recommendation">-</p>
+                </div>
+                <div class="mt-3">
+                    <h6>Decision Support</h6>
+                    <p class="mb-1">Decision Threshold (days): <span id="decision-threshold">-</span></p>
+                    <p><strong>Suggestion:</strong> <span id="decision-suggestion">-</span></p>
+                </div>
+                
+                <!-- Risk Thresholds -->
+                <div class="mt-3">
+                    <h6>Risk Level Thresholds:</h6>
+                    <div class="progress mb-2" style="height: 25px;">
+                        <div class="progress-bar bg-success" style="width: 30%">Low (< 30 days)</div>
+                        <div class="progress-bar bg-warning" style="width: 30%">Medium (30-60 days)</div>
+                        <div class="progress-bar bg-danger" style="width: 40%">High (> 60 days)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <!-- Feature Importance Chart -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Feature Importance Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div id="feature-chart"></div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        This chart shows which factors most influence the injury prediction for this player.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Player Comparison -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Team Comparison</h5>
+            </div>
+            <div class="card-body">
+                <div id="comparison-stats">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Override (Exogenous Event) -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-flag"></i> Manual Risk Override (Out-of-Play Event)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Override Predicted Days</label>
+                        <input type="number" class="form-control" id="override-days" placeholder="e.g., 120">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Reason</label>
+                        <input type="text" class="form-control" id="override-reason" placeholder="e.g., skiing accident">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-danger w-100" onclick="applyOverride()">
+                            <i class="fas fa-save"></i> Apply Override
+                        </button>
+                    </div>
+                </div>
+                <small class="text-muted">Overrides affect only this player's next prediction and are logged locally.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Detailed Metrics -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cogs"></i> Detailed Player Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="player-metrics">
+                    <div class="col-md-3">
+                        <h6>Physical Attributes</h6>
+                        <p><strong>Height:</strong> <span id="height">-</span></p>
+                        <p><strong>Weight:</strong> <span id="weight">-</span></p>
+                        <p><strong>BMI:</strong> <span id="bmi">-</span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Performance</h6>
+                        <p><strong>FIFA Rating:</strong> <span id="fifa-rating">-</span></p>
+                        <p><strong>Pace:</strong> <span id="pace">-</span></p>
+                        <p><strong>Physical:</strong> <span id="physic">-</span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Playing Time</h6>
+                        <p><strong>Season Minutes:</strong> <span id="season-minutes">-</span></p>
+                        <p><strong>Season Games:</strong> <span id="season-games">-</span></p>
+                        <p><strong>Minutes/Game:</strong> <span id="minutes-per-game">-</span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Injury History</h6>
+                        <p><strong>Total Days Injured:</strong> <span id="total-days-injured">-</span></p>
+                        <p><strong>Avg Previous:</strong> <span id="avg-days-injured">-</span></p>
+                        <p><strong>Prev Season:</strong> <span id="prev-season-injured">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clipboard-check"></i> Model Validity and Considerations</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">
+                        <strong>Avoiding overfitting beyond obvious patterns</strong><br>
+                        Use time-aware train/validation splits, cross-validation, and out-of-bag error; restrict model complexity (max depth, min samples per leaf), remove/leakage-proof “obvious” proxy features, and monitor generalization with backtests and permutation tests.
+                    </li>
+                    <li class="mb-2">
+                        <strong>Research-backed variables explaining results</strong><br>
+                        Literature supports prior injury history, cumulative/acute workload, congested fixtures, age, and position-specific demands. We compare feature importance/SHAP attributions to these findings to validate non-obvious drivers.
+                    </li>
+                    <li class="mb-2">
+                        <strong>Cost of a false positive (benching a healthy player)</strong><br>
+                        We surface a decision threshold tied to team cost: expected points lost, replacement quality, salary/transfer impact. Coaches can tune the threshold to reflect current fixture risk appetite.
+                    </li>
+                    <li>
+                        <strong>Incorporating out-of-play events (e.g., off-field injuries)</strong><br>
+                        Capture as exogenous features and/or apply a manual override (see “Manual Risk Override”) so the next prediction accounts for the event; optionally log and learn these events for future model updates.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="/" class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Report
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+const playerId = "{{ player_id }}";
+
+
+// Load player analysis on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadPlayerAnalysis();
+});
+
+
+// Load comprehensive player analysis
+async function loadPlayerAnalysis() {
+    try {
+        const response = await fetch(`/api/player-analysis/${playerId}`);
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Server error: ${text}`);
+        }
+        const data = await response.json();
+
+        if (!data || data.error) {
+            throw new Error(data?.error || 'Unknown error loading player data');
+        }
+
+        if (!data.prediction || data.prediction.error) {
+            throw new Error(data.prediction?.error || 'Unknown error in prediction data');
+        }
+        
+        // Update all player information
+        updatePlayerSummary(data.prediction);
+        updateRiskAnalysis(data.prediction);
+        updatePlayerMetrics(data.prediction);
+        
+        // Load charts
+        loadFeatureChart();
+        
+    } catch (error) {
+        console.error('Error loading player analysis:', error);
+        document.body.innerHTML = `
+            <div class="container py-5">
+                <div class="alert alert-danger">
+                    <h5>Error Loading Analysis</h5>
+                    <p>${error.message}</p>
+                    <a href="/" class="btn btn-primary">Back to Dashboard</a>
+                </div>
+            </div>
+        `;
+    }
+}
+
+
+// Update player summary
+function updatePlayerSummary(prediction) {
+    document.getElementById('predicted-days').textContent = prediction.predicted_injury_days;
+    document.getElementById('actual-days').textContent = prediction.actual_injury_days;
+    document.getElementById('player-age').textContent = prediction.age;
+    document.getElementById('player-position').textContent = prediction.position;
+    document.getElementById('risk-level').textContent = prediction.risk_level;
+    document.getElementById('confidence').textContent = prediction.confidence;
+    document.getElementById('pi-low').textContent = prediction.prediction_interval_low;
+    document.getElementById('pi-high').textContent = prediction.prediction_interval_high;
+    document.getElementById('uncertainty-flag').textContent = prediction.uncertainty_flag ? 'High' : 'Normal';
+    document.getElementById('uncertainty-reason').textContent = prediction.uncertainty_reason || '';
+    document.getElementById('decision-threshold').textContent = prediction.decision_threshold_days;
+    document.getElementById('decision-suggestion').textContent = prediction.decision_suggestion;
+    
+    // Update main risk badge
+    const mainRiskBadge = document.getElementById('main-risk-badge');
+    mainRiskBadge.textContent = prediction.risk_level + ' Risk';
+    mainRiskBadge.className = `badge bg-${prediction.risk_color} fs-6`;
+}
+
+
+// Update risk analysis
+function updateRiskAnalysis(prediction) {
+    const riskAlert = document.getElementById('risk-alert');
+    riskAlert.className = `alert alert-${prediction.risk_color}`;
+    document.getElementById('risk-interpretation').textContent = prediction.risk_interpretation;
+    document.getElementById('risk-recommendation').textContent = prediction.recommendation;
+}
+
+// Apply manual override
+async function applyOverride() {
+    try {
+        const days = parseFloat(document.getElementById('override-days').value);
+        const reason = document.getElementById('override-reason').value || 'manual';
+        if (isNaN(days)) {
+            alert('Please enter a valid number of days.');
+            return;
+        }
+        const resp = await fetch(`/api/override/${playerId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ override_days: days, reason })
+        });
+        const res = await resp.json();
+        if (res.error) throw new Error(res.error);
+        // Reload analysis to reflect override
+        await loadPlayerAnalysis();
+    } catch (e) {
+        alert('Failed to apply override: ' + e.message);
+    }
+}
+
+
+// Update player metrics (this would need additional API endpoint for detailed metrics)
+function updatePlayerMetrics(prediction) {
+    // For now, show placeholder data
+    // In a real implementation, you'd fetch detailed player metrics
+    document.getElementById('height').textContent = 'N/A';
+    document.getElementById('weight').textContent = 'N/A';
+    document.getElementById('bmi').textContent = 'N/A';
+    document.getElementById('fifa-rating').textContent = 'N/A';
+    document.getElementById('pace').textContent = 'N/A';
+    document.getElementById('physic').textContent = 'N/A';
+    document.getElementById('season-minutes').textContent = 'N/A';
+    document.getElementById('season-games').textContent = 'N/A';
+    document.getElementById('minutes-per-game').textContent = 'N/A';
+    document.getElementById('total-days-injured').textContent = 'N/A';
+    document.getElementById('avg-days-injured').textContent = 'N/A';
+    document.getElementById('prev-season-injured').textContent = 'N/A';
+}
+
+
+// Load feature importance chart
+async function loadFeatureChart() {
+    try {
+        const response = await fetch(`/api/charts/feature-importance/${playerId}`);
+        const chartData = await response.json();
+
+        if (chartData.error) {
+            throw new Error(chartData.error);
+        }
+
+        Plotly.newPlot('feature-chart', chartData.data, chartData.layout, {responsive: true});
+    } catch (error) {
+        console.error('Error loading feature chart:', error);
+        document.getElementById('feature-chart').innerHTML = '<p class="text-danger">Error loading chart</p>';
+    }
+}
+</script>
+{% endblock %}
