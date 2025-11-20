@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import cross_val_score
+import json
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -27,7 +28,7 @@ class InjuryPredictionSystem:
     model loading, prediction, evaluation, and visualization capabilities.
     """
     
-    def __init__(self, model_path='models/trained_model.joblib', data_path='data/processed_injury_dataset.csv'):
+    def __init__(self, model_path='models/injury_days_reg.joblib', data_path='data/processed_injury_dataset.csv'):
         """
         Initialize the injury prediction system
         
@@ -40,11 +41,12 @@ class InjuryPredictionSystem:
         self.model = None
         self.data = None
         self.feature_names = None
+        self.metadata = self._load_metadata()
         self.load_model()
         self.load_data()
     
     def load_model(self):
-        """Load the trained Random Forest model"""
+        """Load the trained gradient-boosting pipeline"""
         try:
             self.model = joblib.load(self.model_path)
             print("Model loaded successfully!")
@@ -98,17 +100,24 @@ class InjuryPredictionSystem:
             predicted_days = self.model.predict(player_df)[0]
             
             # Determine risk level
-            if predicted_days < 30:
+            thresholds = self.metadata.get('decision_thresholds_days', [30, 60])
+            low_high = thresholds[0] if thresholds else 30
+            med_high = thresholds[1] if len(thresholds) > 1 else 60
+            if predicted_days < low_high:
                 risk_level = "Low"
-            elif predicted_days < 60:
+            elif predicted_days < med_high:
                 risk_level = "Medium"
             else:
                 risk_level = "High"
+
+            reg_metrics = self.metadata.get('regression_metrics') or {}
+            r2_metric = reg_metrics.get('r2')
+            confidence_note = f"Based on gradient-boosting regressor (rolling R² = {r2_metric:.2f})" if r2_metric is not None else "Based on gradient-boosting regressor"
             
             return {
                 "predicted_injury_days": round(predicted_days, 2),
                 "risk_level": risk_level,
-                "confidence": "Based on Random Forest model with R² = 0.46"
+                "confidence": confidence_note
             }
             
         except Exception as e:
@@ -147,7 +156,7 @@ class InjuryPredictionSystem:
             "r_squared": round(r2, 4),
             "cross_validation_r2_mean": round(cv_scores.mean(), 4),
             "cross_validation_r2_std": round(cv_scores.std(), 4),
-            "model_interpretability": "Random Forest provides feature importance rankings",
+            "model_interpretability": "Gradient-boosting feature importances + SHAP explanations available via metadata",
             "prediction_accuracy": f"Explains {r2*100:.1f}% of variance in injury days"
         }
         
@@ -155,7 +164,7 @@ class InjuryPredictionSystem:
     
     def get_feature_importance(self, top_n=15):
         """
-        Get feature importance rankings from the Random Forest model
+        Get feature importance rankings from the gradient-boosting model
         
         Args:
             top_n (int): Number of top features to return
@@ -166,13 +175,19 @@ class InjuryPredictionSystem:
         if self.model is None:
             return {"error": "Model not loaded"}
         
-        # Get feature importance from the Random Forest
-        rf_model = self.model.named_steps['randomforestregressor']
-        importances = rf_model.feature_importances_
+        booster = self.model.named_steps.get('model')
+        preprocessor = self.model.named_steps.get('preprocess')
+        if booster is None:
+            return {"error": "Model missing gradient-boosting step"}
+        importances = booster.feature_importances_
+        try:
+            feature_labels = preprocessor.get_feature_names_out()
+        except Exception:
+            feature_labels = [f'feature_{idx}' for idx in range(len(importances))]
         
         # Create feature importance DataFrame
         feature_importance = pd.DataFrame({
-            'feature': self.feature_names,
+            'feature': feature_labels,
             'importance': importances
         }).sort_values('importance', ascending=False)
         
@@ -183,6 +198,13 @@ class InjuryPredictionSystem:
             "total_features": len(self.feature_names),
             "interpretation": "Higher importance values indicate stronger influence on injury prediction"
         }
+
+    def _load_metadata(self):
+        try:
+            with open('models/metadata.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            return {}
     
     def create_evaluation_visualizations(self, save_plots=True):
         """

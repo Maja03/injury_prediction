@@ -1,6 +1,10 @@
 {
   "aaronconnolly": {
-    "override_days": 120.0,
-    "reason": "skiing accident"
+    "override_days": 30.0,
+    "reason": "skiing"
+  },
+  "aaroncresswell": {
+    "override_days": 10.0,
+    "reason": "skiing"
   }
 }

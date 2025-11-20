@@ -8,17 +8,19 @@ on core functionality without complex visualizations.
 import pandas as pd
 import numpy as np
 import joblib
+import json
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 class SimpleInjuryPredictionSystem:
     """Simplified injury prediction system"""
     
-    def __init__(self, model_path='models/trained_model.joblib', data_path='data/processed_injury_dataset.csv'):
+    def __init__(self, model_path='models/injury_days_reg.joblib', data_path='data/processed_injury_dataset.csv'):
         self.model_path = model_path
         self.data_path = data_path
         self.model = None
         self.data = None
         self.feature_names = None
+        self.metadata = self._load_metadata()
         self.load_model()
         self.load_data()
     
@@ -46,6 +48,13 @@ class SimpleInjuryPredictionSystem:
         except FileNotFoundError:
             print("Dataset file not found. Please run convert_excel_to_csv.py first")
             return False
+
+    def _load_metadata(self):
+        try:
+            with open('models/metadata.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            return {}
     
     def predict_injury_risk(self, player_data):
         """Predict injury risk for a player"""
@@ -67,12 +76,16 @@ class SimpleInjuryPredictionSystem:
             # Make prediction
             predicted_days = self.model.predict(player_df)[0]
             
+            thresholds = self.metadata.get('decision_thresholds_days', [30, 60])
+            low_high = thresholds[0] if thresholds else 30
+            med_high = thresholds[1] if len(thresholds) > 1 else 60
+
             # Determine risk level with detailed interpretation
-            if predicted_days < 30:
+            if predicted_days < low_high:
                 risk_level = "Low"
                 risk_interpretation = "Low risk of injury this season"
                 recommendation = "Normal training load and monitoring"
-            elif predicted_days < 60:
+            elif predicted_days < med_high:
                 risk_level = "Medium"
                 risk_interpretation = "Moderate risk, monitoring recommended"
                 recommendation = "Consider workload management and enhanced recovery"
@@ -81,16 +94,20 @@ class SimpleInjuryPredictionSystem:
                 risk_interpretation = "High risk, proactive measures necessary"
                 recommendation = "Reduce training intensity and implement injury prevention protocols"
             
+            reg_metrics = self.metadata.get('regression_metrics') or {}
+            r2_metric = reg_metrics.get('r2')
+            confidence_note = f"Based on gradient-boosting regressor (rolling R² = {r2_metric:.2f})" if r2_metric is not None else "Based on gradient-boosting regressor"
+
             return {
                 "predicted_injury_days": round(predicted_days, 2),
                 "risk_level": risk_level,
                 "risk_interpretation": risk_interpretation,
                 "recommendation": recommendation,
-                "confidence": "Based on Random Forest model with R² = 0.46",
+                "confidence": confidence_note,
                 "thresholds": {
-                    "low": "< 30 days",
-                    "medium": "30-60 days", 
-                    "high": "> 60 days"
+                    "low": f"< {int(low_high)} days",
+                    "medium": f"{int(low_high)}-{int(med_high)} days", 
+                    "high": f"> {int(med_high)} days"
                 }
             }
             
@@ -128,13 +145,19 @@ class SimpleInjuryPredictionSystem:
         if self.model is None:
             return {"error": "Model not loaded"}
         
-        # Get feature importance
-        rf_model = self.model.named_steps['randomforestregressor']
-        importances = rf_model.feature_importances_
+        booster = self.model.named_steps.get('model')
+        preprocessor = self.model.named_steps.get('preprocess')
+        if booster is None:
+            return {"error": "Model step missing"}
+        importances = booster.feature_importances_
+        try:
+            feature_labels = preprocessor.get_feature_names_out()
+        except Exception:
+            feature_labels = [f'feature_{idx}' for idx in range(len(importances))]
         
         # Create importance DataFrame
         importance_df = pd.DataFrame({
-            'feature': self.feature_names,
+            'feature': feature_labels,
             'importance': importances
         }).sort_values('importance', ascending=False)
         

@@ -52,6 +52,14 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Avg Injury Prob</h5>
+                        <h2 id="avg-risk-prob">-</h2>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -108,11 +116,13 @@
                             <h6>Injury Prediction</h6>
                             <p><strong>Predicted Days:</strong> <span id="predicted-days">-</span></p>
                             <p><strong>Risk Level:</strong> <span id="risk-level">-</span></p>
+                            <p><strong>Injury Probability:</strong> <span id="injury-probability">-</span></p>
                             <p><strong>Actual Days:</strong> <span id="actual-days">-</span></p>
                             <hr>
                             <p><strong>Prediction Interval:</strong> <span id="pi-low">-</span> – <span id="pi-high">-</span></p>
                             <p><strong>Uncertainty:</strong> <span id="uncertainty-flag">-</span> <small class="text-muted" id="uncertainty-reason"></small></p>
                             <p><strong>Decision Threshold (days):</strong> <span id="decision-threshold">-</span></p>
+                            <p><strong>Decision Threshold (probability):</strong> <span id="decision-threshold-prob">-</span></p>
                             <p><strong>Suggestion:</strong> <span id="decision-suggestion">-</span></p>
                         </div>
                     </div>
@@ -244,6 +254,7 @@ async function loadTeamStats() {
         document.getElementById('avg-risk-days').textContent = stats.avg_predicted_days;
         document.getElementById('high-risk-count').textContent = stats.high_risk_players;
         document.getElementById('low-risk-count').textContent = stats.low_risk_players;
+        document.getElementById('avg-risk-prob').textContent = stats.avg_injury_probability !== undefined ? `${(stats.avg_injury_probability * 100).toFixed(1)}%` : '-';
         
         // Load risk distribution chart
         loadRiskDistributionChart();
@@ -352,6 +363,7 @@ function updatePlayerInfo(prediction) {
     document.getElementById('predicted-days').textContent = prediction.predicted_injury_days;
     document.getElementById('risk-level').textContent = prediction.risk_level;
     document.getElementById('actual-days').textContent = prediction.actual_injury_days;
+    document.getElementById('injury-probability').textContent = prediction.injury_probability !== undefined ? `${(prediction.injury_probability * 100).toFixed(1)}%` : '-';
     
     // Update risk badge
     const riskBadge = document.getElementById('risk-badge');
@@ -364,6 +376,7 @@ function updatePlayerInfo(prediction) {
     document.getElementById('uncertainty-flag').textContent = prediction.uncertainty_flag ? 'High' : 'Normal';
     document.getElementById('uncertainty-reason').textContent = prediction.uncertainty_reason || '';
     document.getElementById('decision-threshold').textContent = prediction.decision_threshold_days;
+    document.getElementById('decision-threshold-prob').textContent = prediction.decision_threshold_prob !== undefined ? `${(prediction.decision_threshold_prob * 100).toFixed(0)}%` : '-';
     document.getElementById('decision-suggestion').textContent = prediction.decision_suggestion;
 }
 

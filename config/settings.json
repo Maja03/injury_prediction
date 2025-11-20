@@ -3,6 +3,7 @@
     "low_high": 30,
     "med_high": 60
   },
-  "decision_threshold_days": 90.0,
-  "interval_quantile": "q80"
+  "decision_threshold_days": 10.0,
+  "decision_threshold_prob": 0.5,
+  "interval_quantile": "q90"
 }

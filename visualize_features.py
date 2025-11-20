@@ -9,21 +9,34 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import joblib
+import json
+
+MODEL_PATH = 'models/injury_days_reg.joblib'
+DATA_PATH = 'data/processed_injury_dataset.csv'
+METADATA_PATH = 'models/metadata.json'
+
+
+def _load_metadata():
+    try:
+        with open(METADATA_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
 
 def create_feature_importance_visualization():
     """Create a comprehensive feature importance visualization"""
     
-    # Load model and data
-    model = joblib.load('models/trained_model.joblib')
-    data = pd.read_csv('data/processed_injury_dataset.csv')
-    
-    # Get feature names
-    feature_names = [col for col in data.columns 
-                    if col not in ['p_id2', 'dob', 'season_days_injured']]
-    
-    # Get feature importance
-    rf_model = model.named_steps['randomforestregressor']
-    importances = rf_model.feature_importances_
+    metadata = _load_metadata()
+    model = joblib.load(MODEL_PATH)
+    data = pd.read_csv(DATA_PATH)
+
+    preprocessor = model.named_steps.get('preprocess')
+    booster = model.named_steps.get('model')
+    importances = booster.feature_importances_
+    try:
+        feature_names = preprocessor.get_feature_names_out()
+    except Exception:
+        feature_names = [f'feature_{i}' for i in range(len(importances))]
     
     # Create importance DataFrame
     importance_df = pd.DataFrame({
@@ -75,12 +88,14 @@ def create_feature_importance_visualization():
 def create_prediction_visualization():
     """Create actual vs predicted visualization"""
     
-    # Load model and data
-    model = joblib.load('models/trained_model.joblib')
-    data = pd.read_csv('data/processed_injury_dataset.csv')
+    metadata = _load_metadata()
+    model = joblib.load(MODEL_PATH)
+    data = pd.read_csv(DATA_PATH)
     
-    # Prepare data
-    X = data.drop(columns=['p_id2', 'dob', 'season_days_injured'])
+    feature_names = metadata.get('feature_names') or [
+        col for col in data.columns if col not in ['p_id2', 'dob', 'season_days_injured']
+    ]
+    X = data[feature_names]
     y = data['season_days_injured']
     
     # Make predictions
@@ -127,20 +142,25 @@ def create_prediction_visualization():
 def create_risk_distribution_visualization():
     """Create risk level distribution visualization"""
     
-    # Load model and data
-    model = joblib.load('models/trained_model.joblib')
-    data = pd.read_csv('data/processed_injury_dataset.csv')
+    metadata = _load_metadata()
+    model = joblib.load(MODEL_PATH)
+    data = pd.read_csv(DATA_PATH)
     
-    # Prepare data and make predictions
-    X = data.drop(columns=['p_id2', 'dob', 'season_days_injured'])
+    feature_names = metadata.get('feature_names') or [
+        col for col in data.columns if col not in ['p_id2', 'dob', 'season_days_injured']
+    ]
+    X = data[feature_names]
     y_pred = model.predict(X)
     
     # Categorize predictions into risk levels
     risk_levels = []
+    thresholds = metadata.get('decision_thresholds_days', [30, 60])
+    low_high = thresholds[0] if thresholds else 30
+    med_high = thresholds[1] if len(thresholds) > 1 else 60
     for pred in y_pred:
-        if pred < 30:
+        if pred < low_high:
             risk_levels.append('Low')
-        elif pred < 60:
+        elif pred < med_high:
             risk_levels.append('Medium')
         else:
             risk_levels.append('High')
@@ -159,8 +179,8 @@ def create_risk_distribution_visualization():
     
     # Predicted injury days distribution
     ax2.hist(y_pred, bins=30, color='skyblue', alpha=0.7, edgecolor='black')
-    ax2.axvline(30, color='green', linestyle='--', linewidth=2, label='Low Risk Threshold')
-    ax2.axvline(60, color='orange', linestyle='--', linewidth=2, label='Medium Risk Threshold')
+    ax2.axvline(low_high, color='green', linestyle='--', linewidth=2, label='Low Risk Threshold')
+    ax2.axvline(med_high, color='orange', linestyle='--', linewidth=2, label='Medium Risk Threshold')
     ax2.set_xlabel('Predicted Injury Days', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Number of Players', fontsize=12, fontweight='bold')
     ax2.set_title('Distribution of Predicted Injury Days', fontsize=14, fontweight='bold')

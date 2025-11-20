@@ -14,19 +14,20 @@ This thesis project develops an AI-based system capable of predicting injury ris
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 
 ### 🤖 AI Prediction Engine
-- **Individual Injury Risk Prediction**: Predicts the number of days an athlete is expected to be injured during a competitive season
-- **Risk Level Classification**: Categorizes players into Low/Medium/High injury risk levels
-- **Feature Importance Analysis**: Identifies the most influential factors affecting injury risk
-- **Comprehensive Model Evaluation**: Rigorous validation with multiple metrics and visualizations
-- **Open Data Integration**: Built on publicly accessible football databases
-- **Interpretable AI**: Random Forest model provides transparent decision-making insights
+- **Dual Gradient-Boosted Pipelines**: Regression estimates injury days while classification estimates the probability of missing ≥30 days
+- **Season-Aware Validation**: Rolling-origin splits by `start_year` reproduce longitudinal studies (Martins et al., 2025)
+- **Explainable AI**: SHAP explanations expose biomechanical factors per player (Calderón-Díaz et al., 2024)
+- **Comprehensive Model Evaluation**: Regression + classification metrics, decision curves, and conformal-style intervals
+- **Open Data Integration**: Built on publicly accessible football datasets with four-season coverage
+- **Decision Support Hooks**: Configurable thresholds for medical and performance staff
 
 ## 📊 Model Performance
 
-- **Algorithm**: Random Forest Regression
-- **R² Score**: 0.46 (explains 46% of variance in injury days)
-- **Cross-Validation**: 5-fold CV with consistent performance
-- **Features**: 99 player attributes including injury history, playing time, age, physical metrics, and positional data
+- **Algorithms**: HistGradientBoosting Regressor (injury days) + HistGradientBoosting Classifier (≥30-day injury flag)
+- **Validation**: Rolling-origin (train on seasons 1..n-1, test on season n) to respect temporal drift
+- **Stored Metrics**: `models/metadata.json` captures R², MSE, MAE, ROC-AUC, average precision, recall, and residual quantiles after training
+- **Decision Analytics**: `models/decision_curve_data.csv` summarises bench/play trade-offs for multiple probability & day thresholds
+- **Explainability**: Player-level SHAP attributions surface biomechanical/workload drivers directly in the UI
 
 ## 🚀 Quick Start
 
@@ -46,7 +47,7 @@ python convert_excel_to_csv.py
 
 ### 2. Model Training
 
-Train the Random Forest model:
+Train the longitudinal gradient-boosted pipelines (regression + classification):
 
 ```bash
 python -u scripts/train_and_evaluate.py
@@ -89,7 +90,10 @@ project/
 │   ├── processed_injury_dataset.xls  # Original dataset
 │   └── processed_injury_dataset.csv  # Processed CSV data
 ├── models/
-│   └── trained_model.joblib          # Trained Random Forest model
+│   ├── injury_days_reg.joblib        # Gradient-boosting regression pipeline
+│   ├── injury_flag_clf.joblib        # Gradient-boosting classification pipeline
+│   ├── shap_background.joblib        # Background sample for SHAP
+│   └── metadata.json                 # Calibration + metrics summary
 └── README.md                         # This file
 ```
 
@@ -102,27 +106,26 @@ project/
 - **Positional Data**: Player position, work rate, nationality
 
 ### Machine Learning Approach
-- **Algorithm**: Random Forest Regression
-- **Preprocessing**: Median imputation for missing values
-- **Feature Engineering**: 99 engineered features from raw data
-- **Validation**: 80/20 train-test split with cross-validation
+- **Algorithms**: HistGradientBoosting regression for `season_days_injured` + HistGradientBoosting classification for ≥30-day injury indicator
+- **Preprocessing**: ColumnTransformer with median-imputed numeric features and one-hot encoded categoricals
+- **Feature Set**: 99 attributes spanning history, workload, biomechanics, and demographics (see `metadata.json`)
+- **Validation**: Rolling-origin evaluation across seasons, aligned with Majumdar et al. (2024) and Martins et al. (2025)
+- **Calibration**: Absolute residual quantiles provide conformal-style intervals; class weights mitigate imbalance
 
 ### Key Variables
 - Previous injury history (`cumulative_days_injured`, `avg_days_injured_prev_seasons`)
-- Playing time metrics (`season_minutes_played`, `total_minutes_played`)
-- Physical attributes (`age`, `height_cm`, `weight_kg`, `bmi`)
-- Positional data (`position_numeric`, `work_rate_numeric`)
+- Training load and availability (`season_minutes_played`, `matches_played`)
+- Physical/biomechanical markers (`age`, `height_cm`, `weight_kg`, `bmi`)
+- Position & role descriptors (`position_numeric`, `work_rate_numeric`)
 - Performance indicators (`fifa_rating`, `pace`, `physic`)
 
 ## 📈 Evaluation Metrics
 
-The system provides comprehensive evaluation through:
+After running the training script, consult `models/metadata.json` for:
 
-- **Mean Squared Error (MSE)**: Overall prediction accuracy
-- **Root Mean Squared Error (RMSE)**: Interpretable error measure
-- **Mean Absolute Error (MAE)**: Average prediction error
-- **R-squared (R²)**: Proportion of variance explained
-- **Cross-Validation Scores**: Robustness assessment
+- **Regression**: MSE, MAE, R², residual quantiles (q50/80/90/95)
+- **Classification**: Precision, recall, F1, ROC-AUC, average precision
+- **Decision Curves**: Share of flagged players vs. mean true injury days per threshold
 
 ## 🎨 Visualizations
 
@@ -133,28 +136,33 @@ The system generates comprehensive visualizations:
 3. **Feature Importance Rankings**: Most influential factors
 4. **Prediction Error Analysis**: Systematic bias detection
 
-## 🔍 Feature Importance
+## 🔍 Explainability
 
-Top influential features for injury prediction:
+Calderón-Díaz et al. (2024) emphasise transparent biomechanical signals, so the app surfaces:
 
-1. **Previous Injury History**: Strongest predictor of future injuries
-2. **Playing Time**: Cumulative minutes and games played
-3. **Age**: Physical wear and recovery capacity
-4. **Physical Metrics**: BMI, height, weight relationships
-5. **Position**: Different injury patterns by playing position
+- **Per-Player SHAP Contributions**: Top 10 drivers for every prediction
+- **Team-Level Risk Mix**: Aggregates both predicted days and injury probabilities
+- **Manual Overrides**: Document adjustments for exogenous events while logging reasons
 
 ## 🏆 Research Contributions
 
 ### Academic Impact
-- Novel application of AI to sports injury prediction using open data
-- Comprehensive evaluation framework for injury prediction models
-- Feature importance analysis aligning with sports medicine insights
+- Longitudinal gradient-boosted approach extends Martins et al. (2025) with multi-season open data
+- Explainable biomechanical analysis mirrors Calderón-Díaz et al. (2024)
+- Imbalance-aware evaluation follows Majumdar et al. (2022, 2024) guidance
 
 ### Practical Applications
 - **Medical Staff**: Evidence-based injury risk assessment
 - **Coaches**: Informed workload management decisions
 - **Management**: Strategic player acquisition and retention
 - **Players**: Personalized injury prevention strategies
+
+## 📚 Research Alignment
+- **Martins et al. (2025, Journal of Clinical Medicine)** – Four-season gradient-boosted study informs the rolling-origin split and tree-based architecture.
+- **Calderón-Díaz et al. (2024, Sensors)** – Emphasises explainable ML for muscle injuries, driving SHAP-based reporting and biomechanical narratives.
+- **Majumdar et al. (2024, Journal of Sports Analytics)** – Demonstrates multi-season class-imbalance strategies adopted in our injury-flag classifier.
+- **Majumdar et al. (2022, Sports Medicine – Open)** – Identifies data leakage pitfalls and validation standards mirrored in this pipeline.
+- **Pillitteri et al. (2023, FootballScience.net summary)** – Synthesises internal/external load indicators motivating the chosen feature hierarchy and thresholds.
 
 ## 🔮 Future Enhancements
 
@@ -168,27 +176,42 @@ Top influential features for injury prediction:
 
 ### Model Architecture
 ```python
-Pipeline([
-    ('imputer', SimpleImputer(strategy='median')),
-    ('regressor', RandomForestRegressor(
-        n_estimators=100,
-        random_state=42,
-        max_depth=10
-    ))
+preprocess = ColumnTransformer(
+    transformers=[
+        ('num', Pipeline([('imputer', SimpleImputer(strategy='median'))]), numeric_cols),
+        ('cat', Pipeline([
+            ('imputer', SimpleImputer(strategy='most_frequent')),
+            ('onehot', OneHotEncoder(handle_unknown='ignore'))
+        ]), categorical_cols)
+    ]
+)
+
+regression_pipeline = Pipeline([
+    ('preprocess', preprocess),
+    ('model', LGBMRegressor(n_estimators=500, learning_rate=0.05,
+                            subsample=0.9, colsample_bytree=0.9,
+                            random_state=42))
+])
+
+classification_pipeline = Pipeline([
+    ('preprocess', preprocess),
+    ('model', LGBMClassifier(n_estimators=500, learning_rate=0.05,
+                             subsample=0.9, colsample_bytree=0.9,
+                             class_weight='balanced',
+                             random_state=42))
 ])
 ```
 
 ### Data Processing
-- **Missing Value Handling**: Median imputation
-- **Feature Scaling**: Not required for Random Forest
-- **Categorical Encoding**: One-hot encoding for categorical variables
-- **Target Variable**: `season_days_injured` (continuous)
+- **Missing Value Handling**: Median (numeric) / most frequent (categorical)
+- **Categorical Encoding**: One-hot via ColumnTransformer
+- **Targets**: `season_days_injured` (continuous) + binary flag (`>=30` days)
 
 ## 🎓 Thesis Context
 
-This system exemplifies the integration of open football data with advanced AI methodologies, creating a novel decision support tool for sports professionals. It demonstrates how publicly available data can be transformed into actionable insights for athlete health and performance optimization.
+This system exemplifies the integration of open football data with longitudinal, research-backed ML workflows. It demonstrates how publicly available multi-season records can be transformed into actionable insights for athlete health and workload management.
 
-The moderate predictive power (R² = 0.46) aligns with the complexity of injury prediction in professional sports, where multiple factors interact in non-linear ways. The system's interpretability through feature importance rankings provides valuable insights for sports medicine professionals.
+Performance varies by dataset composition; after each training run consult `models/metadata.json` for contemporary regression and classification metrics. Consistent with prior literature, moderate R² / ROC-AUC values reflect the inherent complexity of injury forecasting, which is why explainability, calibration, and decision curves accompany every prediction.
 
 ## 📞 Usage Examples
 

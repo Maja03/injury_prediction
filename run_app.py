@@ -11,7 +11,7 @@ import os
 def check_dependencies():
     """Check if required packages are installed"""
     required_packages = [
-        'flask', 'pandas', 'numpy', 'scikit-learn', 
+        'flask', 'pandas', 'numpy', 'sklearn', 
         'joblib', 'plotly'
     ]
     
@@ -37,7 +37,9 @@ def check_dependencies():
 def check_files():
     """Check if required files exist"""
     required_files = [
-        'models/trained_model.joblib',
+        'models/injury_days_reg.joblib',
+        'models/injury_flag_clf.joblib',
+        'models/metadata.json',
         'data/processed_injury_dataset.csv',
         'app.py'
     ]

@@ -1,0 +1,538 @@
+{
+  "feature_names": [
+    "start_year",
+    "total_days_injured",
+    "season_minutes_played",
+    "season_games_played",
+    "season_matches_in_squad",
+    "total_minutes_played",
+    "total_games_played",
+    "height_cm",
+    "weight_kg",
+    "pace",
+    "physic",
+    "fifa_rating",
+    "age",
+    "cumulative_minutes_played",
+    "cumulative_games_played",
+    "minutes_per_game_prev_seasons",
+    "avg_days_injured_prev_seasons",
+    "avg_games_per_season_prev_seasons",
+    "bmi",
+    "work_rate_numeric",
+    "position_numeric",
+    "significant_injury_prev_season",
+    "cumulative_days_injured",
+    "season_days_injured_prev_season",
+    "nationality_Algeria",
+    "nationality_Argentina",
+    "nationality_Armenia",
+    "nationality_Australia",
+    "nationality_Austria",
+    "nationality_Belgium",
+    "nationality_Bermuda",
+    "nationality_Bosnia Herzegovina",
+    "nationality_Cameroon",
+    "nationality_Canada",
+    "nationality_Chile",
+    "nationality_Colombia",
+    "nationality_Costa Rica",
+    "nationality_Croatia",
+    "nationality_Curacao",
+    "nationality_Czech Republic",
+    "nationality_DR Congo",
+    "nationality_Denmark",
+    "nationality_Ecuador",
+    "nationality_Egypt",
+    "nationality_England",
+    "nationality_Estonia",
+    "nationality_Finland",
+    "nationality_France",
+    "nationality_Gabon",
+    "nationality_Germany",
+    "nationality_Ghana",
+    "nationality_Greece",
+    "nationality_Guinea",
+    "nationality_Iceland",
+    "nationality_Iran",
+    "nationality_Israel",
+    "nationality_Italy",
+    "nationality_Ivory Coast",
+    "nationality_Jamaica",
+    "nationality_Japan",
+    "nationality_Kenya",
+    "nationality_Mali",
+    "nationality_Morocco",
+    "nationality_Netherlands",
+    "nationality_New Zealand",
+    "nationality_Nigeria",
+    "nationality_Northern Ireland",
+    "nationality_Norway",
+    "nationality_Poland",
+    "nationality_Portugal",
+    "nationality_Republic of Ireland",
+    "nationality_Romania",
+    "nationality_Scotland",
+    "nationality_Senegal",
+    "nationality_Serbia",
+    "nationality_Slovenia",
+    "nationality_South Africa",
+    "nationality_Spain",
+    "nationality_Sweden",
+    "nationality_Switzerland",
+    "nationality_Turkey",
+    "nationality_Ukraine",
+    "nationality_United States",
+    "nationality_Uruguay",
+    "nationality_Wales",
+    "work_rate_High/High",
+    "work_rate_High/Low",
+    "work_rate_High/Medium",
+    "work_rate_Low/High",
+    "work_rate_Low/Medium",
+    "work_rate_Medium/High",
+    "work_rate_Medium/Low",
+    "work_rate_Medium/Medium",
+    "position_Defender",
+    "position_Forward",
+    "position_Goalkeeper",
+    "position_Midfielder",
+    "minutes_per_game",
+    "injury_risk"
+  ],
+  "classification_threshold_days": 30,
+  "regression_metrics": {
+    "mse": 4842.477633818369,
+    "r2": 0.29353376762211314,
+    "mae": 44.31081533092244
+  },
+  "classification_metrics": {
+    "precision": 0.8018617021276596,
+    "recall": 0.8492957746478873,
+    "f1": 0.8248974008207934,
+    "roc_auc": 0.8087410255404293,
+    "average_precision": 0.8660675059491467
+  },
+  "calibration": {
+    "abs_residual_quantiles": {
+      "q50": 25.648916873091295,
+      "q80": 69.98505185492036,
+      "q90": 109.89298723860418,
+      "q95": 146.25843153765084
+    },
+    "note": "Quantiles derived from season-wise rolling evaluation"
+  },
+  "feature_ranges": {
+    "start_year": {
+      "min": 2016.0,
+      "max": 2020.0
+    },
+    "total_days_injured": {
+      "min": 3.0,
+      "max": 2398.0
+    },
+    "season_minutes_played": {
+      "min": 0.0,
+      "max": 3610.0
+    },
+    "season_games_played": {
+      "min": 0.0,
+      "max": 38.0
+    },
+    "season_matches_in_squad": {
+      "min": 1.0,
+      "max": 54.0
+    },
+    "total_minutes_played": {
+      "min": 0.0,
+      "max": 16768.0
+    },
+    "total_games_played": {
+      "min": 0.0,
+      "max": 179.0
+    },
+    "height_cm": {
+      "min": 163.0,
+      "max": 203.0
+    },
+    "weight_kg": {
+      "min": 58.0,
+      "max": 99.0
+    },
+    "pace": {
+      "min": 28.33333333333333,
+      "max": 93.0
+    },
+    "physic": {
+      "min": 40.75,
+      "max": 88.16666666666667
+    },
+    "fifa_rating": {
+      "min": 53.0,
+      "max": 89.5
+    },
+    "age": {
+      "min": 17.0,
+      "max": 39.0
+    },
+    "cumulative_minutes_played": {
+      "min": 0.0,
+      "max": 39102.0
+    },
+    "cumulative_games_played": {
+      "min": 0.0,
+      "max": 508.0
+    },
+    "minutes_per_game_prev_seasons": {
+      "min": 7.0,
+      "max": 95.0
+    },
+    "avg_days_injured_prev_seasons": {
+      "min": 2.0,
+      "max": 702.0
+    },
+    "avg_games_per_season_prev_seasons": {
+      "min": 0.0,
+      "max": 38.0
+    },
+    "bmi": {
+      "min": 18.792450804048432,
+      "max": 28.5254746993544
+    },
+    "work_rate_numeric": {
+      "min": 2.5,
+      "max": 4.0
+    },
+    "position_numeric": {
+      "min": 0.0,
+      "max": 3.0
+    },
+    "significant_injury_prev_season": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "cumulative_days_injured": {
+      "min": 7.0,
+      "max": 7590.0
+    },
+    "season_days_injured_prev_season": {
+      "min": 0.0,
+      "max": 702.0
+    },
+    "nationality_Algeria": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Argentina": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Armenia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Australia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Austria": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Belgium": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Bermuda": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Bosnia Herzegovina": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Cameroon": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Canada": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Chile": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Colombia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Costa Rica": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Croatia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Curacao": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Czech Republic": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_DR Congo": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Denmark": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Ecuador": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Egypt": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_England": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Estonia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Finland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_France": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Gabon": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Germany": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Ghana": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Greece": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Guinea": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Iceland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Iran": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Israel": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Italy": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Ivory Coast": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Jamaica": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Japan": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Kenya": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Mali": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Morocco": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Netherlands": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_New Zealand": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Nigeria": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Northern Ireland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Norway": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Poland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Portugal": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Republic of Ireland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Romania": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Scotland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Senegal": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Serbia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Slovenia": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_South Africa": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Spain": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Sweden": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Switzerland": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Turkey": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Ukraine": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_United States": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Uruguay": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "nationality_Wales": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_High/High": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_High/Low": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_High/Medium": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_Low/High": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_Low/Medium": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_Medium/High": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_Medium/Low": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "work_rate_Medium/Medium": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "position_Defender": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "position_Forward": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "position_Goalkeeper": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "position_Midfielder": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "minutes_per_game": {
+      "min": 4.0,
+      "max": 95.03030303030305
+    },
+    "injury_risk": {
+      "min": 0.0,
+      "max": 1.0
+    }
+  },
+  "decision_thresholds_days": [
+    30,
+    45,
+    60
+  ],
+  "decision_thresholds_prob": [
+    0.3,
+    0.5,
+    0.7
+  ],
+  "references": [
+    "Martins et al. (2025) longitudinal gradient-boosted injury prediction",
+    "Calder\u00f3n-D\u00edaz et al. (2024) explainable ML for muscle injuries",
+    "Majumdar et al. (2024) class-imbalance aware multi-season models"
+  ]
+}
