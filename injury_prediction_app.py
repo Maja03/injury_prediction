@@ -5,7 +5,7 @@ This application provides a comprehensive injury prediction system for professio
 leveraging machine learning to predict injury risk and severity based on player statistics,
 historical injury records, and performance metrics.
 
-Author: [Your Name]
+Author: Maja Czekała
 Thesis: AI-Based Athlete Injury Prediction System Using Open Football Data
 """
 
