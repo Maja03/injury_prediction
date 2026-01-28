@@ -6,5 +6,13 @@
   "aaroncresswell": {
     "override_days": 10.0,
     "reason": "skiing"
+  },
+  "aaronramsdale": {
+    "override_days": 14.0,
+    "reason": "skiing accident"
+  },
+  "aaronlennon": {
+    "override_days": 10.0,
+    "reason": "climbing"
   }
 }

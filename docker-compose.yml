@@ -1,0 +1,24 @@
+services:
+  injury-prediction-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: injury-prediction-app:latest
+    container_name: injury-prediction-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount data and models directories for persistence
+      - ./data:/app/data:ro
+      - ./models:/app/models:ro
+      - ./config:/app/config:rw
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/team-stats')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
