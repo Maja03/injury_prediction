@@ -248,6 +248,37 @@ system.create_evaluation_visualizations()
 importance = system.get_feature_importance(top_n=10)
 ```
 
+## 🔄 Development Methodology
+
+This project follows a **Scrum/Kanban hybrid methodology** with time-boxed sprints (1-2 weeks) and visual workflow management.
+
+### Agile Practices
+
+- **Time-boxed Sprints**: 1-2 week focused development cycles
+- **Product Backlog**: Prioritized list of features and tasks (see `PRODUCT_BACKLOG.md`)
+- **Kanban Board**: Visual workflow with columns: Backlog → In Progress → In Review → Testing → Done
+- **Sprint Planning**: Regular planning sessions to select and commit to work items
+- **Daily Standups**: Daily progress tracking and blocker identification
+- **Sprint Reviews**: End-of-sprint demonstrations and feedback
+- **Retrospectives**: Continuous improvement through reflection
+
+### Documentation
+
+- `PRODUCT_BACKLOG.md` - Master backlog of all work items
+- `SPRINT_PLANNING.md` - Sprint planning templates and examples
+- `SPRINT_RETROSPECTIVE.md` - Retrospective templates and learnings
+- `KANBAN_BOARD.md` - Current board state and workflow rules
+- `SCRUM_KANBAN_GUIDE.md` - Comprehensive how-to guide
+- `AGILE_METHODOLOGY.md` - Methodology overview and thesis integration
+
+### Sprint History
+
+- **Sprint 1** (Week 1-2): Foundation - Core ML models, web framework, Docker (16 points ✅)
+- **Sprint 2** (Week 3-4): Quality - CI/CD, testing, documentation (13 points 🔄)
+- **Sprint 3** (Week 5-6): Enhancement - Error handling, performance, UX (Planned)
+
+This methodology supports iterative development, continuous improvement, and provides structured documentation for the thesis paper.
+
 ## 📄 License
 
 This project is developed as part of academic research. Please cite appropriately if used in research or commercial applications.
