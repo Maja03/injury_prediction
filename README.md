@@ -37,6 +37,9 @@ This thesis project develops an AI-based system capable of predicting injury ris
 pip install -r requirements.txt
 ```
 
+Note: the pre-trained models in `models/*.joblib` were saved with **scikit-learn 1.7.2**.  
+If you see `InconsistentVersionWarning` or errors like `SimpleImputer ... _fill_dtype`, reinstall deps so you’re on the pinned version in `requirements.txt`.
+
 ### 1. Data Preparation
 
 Convert the Excel dataset to CSV format:
