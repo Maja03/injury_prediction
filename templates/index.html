@@ -330,7 +330,7 @@ async function selectPlayer(playerId) {
     
     try {
         // Load player analysis
-        const response = await fetch(`/api/player-analysis/${playerId}`);
+        const response = await fetch(`/api/player-analysis/${encodeURIComponent(playerId)}`);
         const data = await response.json();
         
         if (data.prediction.error) {
@@ -391,7 +391,7 @@ function updateRiskAnalysis(prediction) {
 // Load feature importance chart
 async function loadFeatureChart(playerId) {
     try {
-        const response = await fetch(`/api/charts/feature-importance/${playerId}`);
+        const response = await fetch(`/api/charts/feature-importance/${encodeURIComponent(playerId)}`);
         const chartData = await response.json();
         
         if (chartData.error) {
@@ -415,7 +415,7 @@ async function applyOverride(playerId) {
             alert('Please enter a valid number of days');
             return;
         }
-        const resp = await fetch(`/api/override/${playerId}`, {
+        const resp = await fetch(`/api/override/${encodeURIComponent(playerId)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ override_days: days, reason })

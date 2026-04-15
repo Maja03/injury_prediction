@@ -78,29 +78,3 @@ jobs:
         echo "1. Update your deployment configuration (Render/Railway/VPS)"
         echo "2. Pull the latest image: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
         echo "3. Restart your deployment service"
-    
-    # Uncomment and configure based on your hosting provider:
-    # 
-    # For Render:
-    # - name: Trigger Render deployment
-    #   run: |
-    #     curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-    #
-    # For Railway:
-    # - name: Deploy to Railway
-    #   uses: bervProject/railway-deploy@master
-    #   with:
-    #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
-    #     service: injury-prediction-app
-    #
-    # For VPS (via SSH):
-    # - name: Deploy to VPS
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: ${{ secrets.VPS_HOST }}
-    #     username: ${{ secrets.VPS_USER }}
-    #     key: ${{ secrets.VPS_SSH_KEY }}
-    #     script: |
-    #       cd /path/to/app
-    #       docker-compose pull
-    #       docker-compose up -d

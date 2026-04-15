@@ -262,15 +262,6 @@ This project follows a **Scrum/Kanban hybrid methodology** with time-boxed sprin
 - **Sprint Reviews**: End-of-sprint demonstrations and feedback
 - **Retrospectives**: Continuous improvement through reflection
 
-### Documentation
-
-- `PRODUCT_BACKLOG.md` - Master backlog of all work items
-- `SPRINT_PLANNING.md` - Sprint planning templates and examples
-- `SPRINT_RETROSPECTIVE.md` - Retrospective templates and learnings
-- `KANBAN_BOARD.md` - Current board state and workflow rules
-- `SCRUM_KANBAN_GUIDE.md` - Comprehensive how-to guide
-- `AGILE_METHODOLOGY.md` - Methodology overview and thesis integration
-
 ### Sprint History
 
 - **Sprint 1** (Week 1-2): Foundation - Core ML models, web framework, Docker (16 points ✅)
