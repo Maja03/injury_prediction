@@ -312,5 +312,5 @@ This project is developed as part of academic research. Please cite appropriatel
 
 **Thesis**: AI-Based Athlete Injury Prediction System Using Open Football Data  
 **Author**: Maja Czekała 
-**Institution**: 
-**Year**: 2025
+**Institution**: Deggendorf Institute of Technology Campus, uropean Campus Rottal-Inn
+**Year**: 2026
