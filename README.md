@@ -66,6 +66,31 @@ python run_app.py
 
 Then open your browser and go to: **http://localhost:5000**
 
+#### Troubleshooting: `python app.py` / player pages not working
+
+If the app opens but clicking a player fails (e.g. `/api/player-analysis/<id>` returns 400) and you see warnings like:
+
+- `InconsistentVersionWarning: Trying to unpickle estimator ... from version 1.7.2 when using version 1.8.0`
+- `SimpleImputer ... has no attribute _fill_dtype`
+
+it means your environment’s **scikit-learn version doesn’t match** the version used to train the saved models in `models/*.joblib`.
+
+Fix (recommended): install the pinned scikit-learn version from `requirements.txt`:
+
+```bash
+python -m pip uninstall -y scikit-learn
+python -m pip install -r requirements.txt
+python -c "import sklearn; print(sklearn.__version__)"
+python app.py
+```
+
+Alternative: retrain the models in your current environment (then re-run the app):
+
+```bash
+python -u scripts/train_and_evaluate.py
+python app.py
+```
+
 ### 4. Alternative: Command Line Interface
 
 For command-line usage:
